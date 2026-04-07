@@ -259,7 +259,7 @@
   }
 
   .work-header {
-    display: flex;
+    display: none;
     justify-content: space-between;
     align-items: flex-end;
     margin-bottom: 4rem;
@@ -649,9 +649,6 @@
     .service-item { border-right: none; border-bottom: 1px solid rgba(200,191,168,0.06); }
     footer { flex-direction: column; gap: 1rem; text-align: center; }
   }
-  .p {
-    display: none !important;
-}
 </style>
 </head>
 <body>
