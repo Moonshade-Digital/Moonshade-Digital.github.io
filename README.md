@@ -126,7 +126,7 @@
     position: relative;
     z-index: 1;
     height: 100vh;
-    display: flex;
+    display: none;
     flex-direction: column;
     justify-content: center;
     align-items: flex-start;
