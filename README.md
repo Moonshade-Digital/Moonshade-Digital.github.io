@@ -126,7 +126,7 @@
     position: relative;
     z-index: 1;
     height: 100vh;
-    display: none;
+    display: flex;
     flex-direction: column;
     justify-content: center;
     align-items: flex-start;
@@ -259,7 +259,7 @@
   }
 
   .work-header {
-    display: flex;
+    display: none;
     justify-content: space-between;
     align-items: flex-end;
     margin-bottom: 4rem;
@@ -673,9 +673,9 @@
 
 <!-- Hero -->
 <section id="hero">
-  <p class="hero-eyebrow">Digital Media Studio — Est. 2018</p>
+  <p class="hero-eyebrow">Digital Media Studio — Est. 2024</p>
   <h1 class="hero-title">We craft<br><em>stories</em><br>in light.</h1>
-  <p class="hero-subtitle">Moonshade Digital is a creative studio shaping brands, campaigns, and digital experiences that define the modern era.</p>
+  <p class="hero-subtitle">Moonshade Digital is a boutique creative studio shaping brands, campaigns, and digital experiences that resonate in the modern era.</p>
   <a href="#work" class="hero-cta">
     View Our Work
     <span class="cta-arrow">→</span>
@@ -812,10 +812,9 @@
 <footer>
   <p>© 2026 Moonshade Digital. All rights reserved.</p>
   <ul class="footer-links">
-   <li><a href="https://substack.com/@moonshadedigital">Substack</a></li>
-    <li><a href="https://www.instagram.com/moonshadedigital">Instagram</a></li>
-    <li><a href="https://www.linkedin.com/company/moonshade-media">LinkedIn</a></li>
-    <li><a href="https://x.com/MoonshadeDigi">Twitter</a></li>
+    <li><a href="https://www.instagram.com/moonshadedigital/">Instagram</a></li>
+    <li><a href="#">LinkedIn</a></li>
+    <li><a href="#">Twitter</a></li>
   </ul>
 </footer>
 
