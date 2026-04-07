@@ -802,14 +802,17 @@
   <p class="section-label reveal">Get in Touch</p>
   <h2 class="section-title reveal">Let's make something<br><em>worth remembering.</em></h2>
   <p class="reveal">Whether you have a clear brief or just an early idea, we'd love to hear from you. Most great projects start with a conversation.</p>
-  <a href="mailto:hello@moonshade-digital.github.io" class="contact-link reveal">hello@moonshade-digital.com</a>
+
+  <!-- Email -->
+
+  <a href="mailto:hello@moonshade-digital.github.io" class="contact-link reveal">moonshadedigital@gmail.com</a>
 </section>
 
 <!-- Footer -->
 <footer>
-  <p>© 2024 Moonshade Digital. All rights reserved.</p>
+  <p>© 2026 Moonshade Digital. All rights reserved.</p>
   <ul class="footer-links">
-    <li><a href="#">Instagram</a></li>
+    <li><a href="https://www.instagram.com/moonshadedigital/">Instagram</a></li>
     <li><a href="#">LinkedIn</a></li>
     <li><a href="#">Twitter</a></li>
   </ul>
