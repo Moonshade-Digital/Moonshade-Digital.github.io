@@ -1,4 +1,3 @@
-
 <!DOCTYPE html>
 <html lang="en">
 <head>
@@ -914,15 +913,32 @@
       btn.addEventListener('mouseleave', () => { btn.style.transform = ''; });
     });
 
-    // ── Contact Form ──
+    // ── Contact Form → Google Form redirect ──
+    // Service dropdown values mapped to Google Form option labels
+    const SERVICE_MAP = {
+      'Brand Identity & Strategy': 'Brand Identity & Strategy',
+      'Digital Experience Design': 'Digital Experience Design',
+      'Motion & Content':          'Motion & Content',
+      'Campaign & Social':         'Campaign & Social',
+      'Other / Not sure yet':      'Other / Not sure yet'
+    };
+
+    // Google Form base URL
+    const GFORM_BASE = 'https://docs.google.com/forms/d/e/1FAIpQLSdOAvoUM1aUgRghZyJbLStrLCXf4qJ0MWSyjecebfdE-vkVJQ/viewform';
+
     document.getElementById('contact-form').addEventListener('submit', function(e) {
       e.preventDefault();
+
       const status = document.getElementById('form-status');
-      const btn = this.querySelector('[type="submit"]');
-      const name = this.name.value.trim();
-      const email = this.email.value.trim();
+      const btn    = this.querySelector('[type="submit"]');
+
+      const name    = this.name.value.trim();
+      const email   = this.email.value.trim();
+      const company = this.company.value.trim();
+      const service = this.service.value;
       const message = this.message.value.trim();
 
+      // ── Validation ──
       if (!name || !email || !message) {
         status.className = 'form-status error';
         status.textContent = 'Please fill in your name, email, and message.';
@@ -934,40 +950,47 @@
         return;
       }
 
-      btn.textContent = 'Sending…';
+      // ── Build the composed summary for the final "based on text above" field ──
+      const summary = [
+        `Name: ${name}`,
+        `Email: ${email}`,
+        company ? `Company/Project: ${company}` : null,
+        service ? `Service: ${service}` : null,
+        `Message: ${message}`
+      ].filter(Boolean).join('\n');
+
+      // ── Assemble prefill URL ──
+      const params = new URLSearchParams();
+      params.set('entry.1449005772', name);
+      params.set('entry.1685270148', email);
+      if (company) params.set('entry.1842912509', company);
+
+      // Service field — uses __other_option__ for "Other / Not sure yet",
+      // otherwise passes the value directly
+      if (service) {
+        if (service === 'Other / Not sure yet') {
+          params.set('entry.1693510977', '__other_option__');
+          params.set('entry.1693510977.other_option_response', service);
+        } else {
+          params.set('entry.1693510977', service);
+        }
+      }
+
+      params.set('entry.262002855',   message);   // Message field
+      params.set('entry.1369130152',  summary);   // "Based on text above" field
+
+      btn.textContent = 'Redirecting…';
       btn.disabled = true;
 
-      // Replace the action below with your Formspree/Netlify endpoint or backend
-      // For now, we simulate a successful submission after a short delay
+      // Brief pause so the user sees the button state, then open the form
       setTimeout(() => {
+        window.open(`${GFORM_BASE}?${params.toString()}`, '_blank');
         status.className = 'form-status success';
-        status.textContent = 'Message received — we\'ll be in touch soon.';
+        status.textContent = "You're being taken to our intake form — your details are pre-filled. Just hit Submit!";
         this.reset();
         btn.textContent = 'Send Message →';
         btn.disabled = false;
-      }, 1200);
-
-      /* ── LIVE FORM SUBMISSION (Formspree) ──
-         To activate, create a free account at https://formspree.io,
-         get your form endpoint, then replace the setTimeout above with:
-
-        fetch('https://formspree.io/f/YOUR_FORM_ID', {
-          method: 'POST',
-          headers: { 'Content-Type': 'application/json', 'Accept': 'application/json' },
-          body: JSON.stringify({ name, email, company: this.company.value, service: this.service.value, message })
-        })
-        .then(r => r.ok ? r.json() : Promise.reject())
-        .then(() => {
-          status.className = 'form-status success';
-          status.textContent = 'Message received — we\'ll be in touch soon.';
-          form.reset();
-        })
-        .catch(() => {
-          status.className = 'form-status error';
-          status.textContent = 'Something went wrong. Please email us directly.';
-        })
-        .finally(() => { btn.textContent = 'Send Message →'; btn.disabled = false; });
-      */
+      }, 600);
     });
   </script>
 </body>
