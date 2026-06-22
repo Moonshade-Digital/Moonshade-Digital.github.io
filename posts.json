@@ -1,0 +1,23 @@
+[
+  {
+    "slug": "welcome-to-the-journal",
+    "title": "Welcome to the Journal",
+    "date": "2026-06-20",
+    "category": "Note",
+    "excerpt": "A short note on why we're opening this space — and what you can expect to find here."
+  },
+  {
+    "slug": "the-quiet-craft",
+    "title": "The Quiet Craft of Brand-Building",
+    "date": "2026-06-15",
+    "category": "Article",
+    "excerpt": "On patience, restraint, and the long game of identity design in a world that rewards noise."
+  },
+  {
+    "slug": "studio-note-001",
+    "title": "Studio Note: What We're Watching",
+    "date": "2026-06-08",
+    "category": "Note",
+    "excerpt": "A few things catching our attention this month across motion, type, and the open web."
+  }
+]
