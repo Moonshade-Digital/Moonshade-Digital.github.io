@@ -588,6 +588,46 @@
       footer { flex-direction: column; gap: 1.5rem; text-align: center; padding: 2rem; }
       .footer-links { justify-content: center; flex-wrap: wrap; }
     }
+    /* ════════ SUBSCRIBE POPUP ════════ */
+    .sub-toast {
+      position: fixed; bottom: 2rem; right: 2rem; z-index: 9000;
+      width: 340px; max-width: calc(100vw - 2rem);
+      background: rgba(16,16,28,0.96); backdrop-filter: blur(14px);
+      border: 1px solid rgba(200,191,168,0.18); padding: 1.6rem 1.6rem 1.4rem;
+      box-shadow: 0 20px 60px rgba(0,0,0,0.5);
+      transform: translateY(140%); opacity: 0; pointer-events: none;
+      transition: transform 0.55s cubic-bezier(.2,.8,.2,1), opacity 0.4s ease;
+    }
+    .sub-toast.show { transform: translateY(0); opacity: 1; pointer-events: all; }
+    .sub-toast .toast-glyph { font-family: 'Cormorant Garamond', serif; font-style: italic; font-size: 1.4rem; color: var(--moon); margin-bottom: 0.5rem; }
+    .sub-toast h4 { font-family: 'Cormorant Garamond', serif; font-weight: 300; font-size: 1.4rem; color: var(--paper); line-height: 1.2; margin-bottom: 0.5rem; }
+    .sub-toast p { font-size: 0.82rem; line-height: 1.65; color: var(--silver); margin-bottom: 1.2rem; }
+    .sub-toast-actions { display: flex; gap: 0.7rem; align-items: center; }
+    .toast-btn { font-family: 'Syne', sans-serif; font-size: 0.7rem; letter-spacing: 0.12em; text-transform: uppercase; padding: 0.65rem 1.3rem; cursor: none; border: none; transition: all 0.3s ease; }
+    .toast-btn.primary { background: var(--accent); color: var(--ink); }
+    .toast-btn.primary:hover { background: var(--moon); }
+    .toast-btn.ghost { background: none; color: var(--silver); border: 1px solid transparent; }
+    .toast-btn.ghost:hover { color: var(--paper); }
+    .sub-modal-overlay { position: fixed; inset: 0; z-index: 9500; background: rgba(6,6,12,0.82); backdrop-filter: blur(8px); display: flex; align-items: center; justify-content: center; padding: 1.5rem; opacity: 0; pointer-events: none; transition: opacity 0.4s ease; }
+    .sub-modal-overlay.show { opacity: 1; pointer-events: all; }
+    .sub-modal { position: relative; width: 480px; max-width: 100%; background: var(--ink); border: 1px solid rgba(200,191,168,0.18); padding: 3rem 2.8rem 2.6rem; box-shadow: 0 30px 80px rgba(0,0,0,0.6); transform: translateY(20px) scale(0.98); transition: transform 0.45s cubic-bezier(.2,.8,.2,1); overflow: hidden; }
+    .sub-modal-overlay.show .sub-modal { transform: translateY(0) scale(1); }
+    .sub-modal::before { content: ''; position: absolute; top: -80px; right: -80px; width: 260px; height: 260px; border-radius: 50%; background: radial-gradient(circle at 40% 40%, rgba(200,191,168,0.08), rgba(123,156,191,0.03) 60%, transparent 80%); pointer-events: none; }
+    .sub-close { position: absolute; top: 1.1rem; right: 1.1rem; width: 34px; height: 34px; background: none; border: 1px solid rgba(200,191,168,0.2); border-radius: 50%; color: var(--moon); font-size: 1rem; cursor: none; display: flex; align-items: center; justify-content: center; transition: border-color 0.3s, color 0.3s, transform 0.3s; }
+    .sub-close:hover { border-color: var(--glow); color: var(--glow); transform: rotate(90deg); }
+    .sub-modal .eyebrow { font-size: 0.66rem; letter-spacing: 0.22em; text-transform: uppercase; color: var(--glow); margin-bottom: 1rem; position: relative; }
+    .sub-modal h3 { font-family: 'Cormorant Garamond', serif; font-weight: 300; font-size: 2.2rem; line-height: 1.1; color: var(--paper); margin-bottom: 1rem; position: relative; }
+    .sub-modal h3 em { font-style: italic; color: var(--moon); }
+    .sub-modal .blurb { font-size: 0.9rem; line-height: 1.8; color: var(--silver); margin-bottom: 1.8rem; position: relative; }
+    .sub-embed-frame { position: relative; border: 1px solid rgba(200,191,168,0.14); background: rgba(245,242,236,0.02); padding: 0.4rem; min-height: 90px; }
+    .sub-embed-frame iframe { width: 100% !important; border: none; background: transparent; display: block; }
+    .sub-fallback { margin-top: 1.1rem; font-size: 0.78rem; color: var(--silver); position: relative; }
+    .sub-fallback a { color: var(--moon); text-decoration: none; border-bottom: 1px solid rgba(200,191,168,0.3); }
+    .sub-fallback a:hover { color: var(--paper); }
+    @media (max-width: 900px) {
+      .sub-toast { right: 1rem; left: 1rem; bottom: 1rem; width: auto; }
+      .sub-modal { padding: 2.4rem 1.6rem 2rem; }
+    }
   </style>
 </head>
 <body>
@@ -603,6 +643,7 @@
       <li><a href="#work">Work</a></li>
       <li><a href="#services">Services</a></li>
       <li><a href="#about">About</a></li>
+      <li><a href="blog.html">Journal</a></li>
       <li><a href="#contact">Contact</a></li>
     </ul>
     <button class="hamburger" id="hamburger" aria-label="Toggle menu" aria-expanded="false">
@@ -615,6 +656,7 @@
     <a href="#work" class="menu-link">Work</a>
     <a href="#services" class="menu-link">Services</a>
     <a href="#about" class="menu-link">About</a>
+    <a href="blog.html" class="menu-link">Journal</a>
     <a href="#contact" class="menu-link">Contact</a>
     <span class="menu-sub">Moonshade Digital — Est. 2018</span>
   </div>
@@ -824,6 +866,30 @@
     </ul>
   </footer>
 
+  <!-- ════════ SUBSCRIBE POPUP ════════ -->
+  <div class="sub-toast" id="sub-toast" role="dialog" aria-label="Subscribe notification">
+    <div class="toast-glyph">☾</div>
+    <h4>New writing, in your inbox.</h4>
+    <p>Want a heads-up whenever we publish a new article or note? Join the Moonshade list.</p>
+    <div class="sub-toast-actions">
+      <button class="toast-btn primary" id="toast-yes">Subscribe</button>
+      <button class="toast-btn ghost" id="toast-no">Maybe later</button>
+    </div>
+  </div>
+
+  <div class="sub-modal-overlay" id="sub-modal-overlay" role="dialog" aria-modal="true" aria-label="Subscribe">
+    <div class="sub-modal">
+      <button class="sub-close" id="sub-close" aria-label="Close">✕</button>
+      <p class="eyebrow">Moonshade Digital — The List</p>
+      <h3>Get notified when we <em>publish.</em></h3>
+      <p class="blurb">Drop your email below and you'll be the first to know each time a new piece goes up — no spam, no noise, just the work.</p>
+      <div class="sub-embed-frame">
+        <iframe src="https://moonshadedigital.substack.com/embed" height="90" scrolling="no" title="Subscribe to Moonshade Digital"></iframe>
+      </div>
+      <p class="sub-fallback">Prefer the full page? <a href="https://moonshadedigital.substack.com/subscribe" target="_blank" rel="noopener">Subscribe on Substack →</a></p>
+    </div>
+  </div>
+
   <script>
     // ── Custom Cursor ──
     const dot = document.getElementById('cursor-dot');
@@ -992,6 +1058,28 @@
         btn.textContent = 'Send Message →';
         btn.disabled = false;
       }, 600);
+    });
+
+    /* ════════ SUBSCRIBE POPUP ════════ */
+    const subToast   = document.getElementById('sub-toast');
+    const subOverlay = document.getElementById('sub-modal-overlay');
+    const SUB_KEY = 'ms_sub_dismissed_at';
+    const SUB_COOLDOWN_DAYS = 14;
+    function subRecentlyDismissed(){ try { const t = localStorage.getItem(SUB_KEY); return t && (Date.now() - Number(t)) < SUB_COOLDOWN_DAYS*86400000; } catch(e){ return false; } }
+    function subRemember(){ try { localStorage.setItem(SUB_KEY, String(Date.now())); } catch(e){} }
+    function subHideToast(){ subToast.classList.remove('show'); }
+    function subOpenModal(){ subHideToast(); subOverlay.classList.add('show'); document.body.style.overflow = 'hidden'; }
+    function subCloseModal(){ subOverlay.classList.remove('show'); document.body.style.overflow = ''; }
+    if (!subRecentlyDismissed()) { setTimeout(() => subToast.classList.add('show'), 6000); }
+    document.getElementById('toast-yes').addEventListener('click', () => { subRemember(); subOpenModal(); });
+    document.getElementById('toast-no').addEventListener('click', () => { subRemember(); subHideToast(); });
+    document.getElementById('sub-close').addEventListener('click', subCloseModal);
+    subOverlay.addEventListener('click', e => { if (e.target === subOverlay) subCloseModal(); });
+    document.addEventListener('keydown', e => { if (e.key === 'Escape' && subOverlay.classList.contains('show')) subCloseModal(); });
+    // make the popup buttons/iframe respond to the custom cursor
+    document.querySelectorAll('.sub-toast button, .sub-modal button, .sub-modal a, .sub-modal iframe').forEach(el => {
+      el.addEventListener('mouseenter', () => document.body.classList.add('cursor-hover'));
+      el.addEventListener('mouseleave', () => document.body.classList.remove('cursor-hover'));
     });
   </script>
 </body>
