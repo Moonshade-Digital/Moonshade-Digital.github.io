@@ -1,0 +1,538 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Journal — Moonshade Digital</title>
+  <meta name="description" content="The Moonshade Digital journal — articles and notes on craft, strategy, and building brands that last." />
+  <link rel="preconnect" href="https://fonts.googleapis.com" />
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+  <link href="https://fonts.googleapis.com/css2?family=Cormorant+Garamond:ital,wght@0,300;0,400;0,500;1,300;1,400&family=Syne:wght@400;600;800&display=swap" rel="stylesheet" />
+  <style>
+    *, *::before, *::after { margin: 0; padding: 0; box-sizing: border-box; }
+
+    :root {
+      --ink:    #0a0a12;
+      --paper:  #f5f2ec;
+      --moon:   #c8bfa8;
+      --silver: #9ca3b0;
+      --glow:   #7b9cbf;
+      --accent: #b8a882;
+      --deep:   #1a1a2e;
+      --mid:    #2d2d4a;
+    }
+
+    html { scroll-behavior: smooth; }
+    body {
+      background: var(--ink);
+      color: var(--paper);
+      font-family: 'Syne', sans-serif;
+      cursor: none;
+      overflow-x: hidden;
+      min-height: 100vh;
+    }
+
+    /* ── Custom Cursor ── */
+    #cursor-dot {
+      position: fixed; width: 8px; height: 8px;
+      background: var(--paper); border-radius: 50%;
+      pointer-events: none; z-index: 9999;
+      transform: translate(-50%, -50%);
+      transition: background 0.2s, width 0.2s, height 0.2s;
+    }
+    #cursor-ring {
+      position: fixed; width: 36px; height: 36px;
+      border: 1px solid rgba(200,191,168,0.4); border-radius: 50%;
+      pointer-events: none; z-index: 9998;
+      transform: translate(-50%, -50%);
+      transition: width 0.3s, height 0.3s, border-color 0.3s;
+    }
+    body.cursor-hover #cursor-dot { width: 14px; height: 14px; background: var(--glow); }
+    body.cursor-hover #cursor-ring { width: 56px; height: 56px; border-color: rgba(123,156,191,0.6); }
+
+    /* ── Star Canvas ── */
+    #star-canvas { position: fixed; inset: 0; z-index: 0; pointer-events: none; opacity: 0.5; }
+
+    /* ── Navigation ── */
+    nav {
+      position: fixed; top: 0; left: 0; right: 0; z-index: 500;
+      display: flex; justify-content: space-between; align-items: center;
+      padding: 1.8rem 4rem;
+      background: linear-gradient(to bottom, rgba(10,10,18,0.97), transparent);
+      transition: background 0.4s, border-bottom 0.4s, padding 0.3s;
+    }
+    nav.scrolled {
+      background: rgba(10,10,18,0.97); backdrop-filter: blur(14px);
+      border-bottom: 1px solid rgba(200,191,168,0.07); padding: 1.2rem 4rem;
+    }
+    .nav-logo {
+      font-family: 'Cormorant Garamond', serif; font-size: 1.4rem; font-weight: 300;
+      letter-spacing: 0.12em; color: var(--moon); text-decoration: none; z-index: 510;
+    }
+    .nav-logo span { font-style: italic; color: var(--paper); }
+    .nav-links { display: flex; gap: 2.5rem; list-style: none; }
+    .nav-links a {
+      color: var(--silver); text-decoration: none; font-size: 0.78rem;
+      letter-spacing: 0.14em; text-transform: uppercase; position: relative; transition: color 0.3s;
+    }
+    .nav-links a::after {
+      content: ''; position: absolute; bottom: -4px; left: 0; width: 0; height: 1px;
+      background: var(--glow); transition: width 0.3s;
+    }
+    .nav-links a:hover, .nav-links a.active { color: var(--paper); }
+    .nav-links a:hover::after, .nav-links a.active::after { width: 100%; }
+
+    .hamburger {
+      display: none; flex-direction: column; justify-content: center; gap: 5px;
+      width: 36px; height: 36px; background: none; border: none; cursor: none; z-index: 510; padding: 4px;
+    }
+    .hamburger span {
+      display: block; height: 1px; background: var(--moon); border-radius: 2px;
+      transition: transform 0.4s ease, opacity 0.3s ease, width 0.3s ease;
+    }
+    .hamburger span:nth-child(2) { width: 70%; }
+    .hamburger.open span:nth-child(1) { transform: translateY(6px) rotate(45deg); }
+    .hamburger.open span:nth-child(2) { opacity: 0; width: 0; }
+    .hamburger.open span:nth-child(3) { transform: translateY(-6px) rotate(-45deg); }
+
+    .mobile-menu {
+      position: fixed; inset: 0; background: rgba(10,10,18,0.98); backdrop-filter: blur(16px);
+      z-index: 490; display: flex; flex-direction: column; justify-content: center; align-items: center;
+      gap: 2.5rem; opacity: 0; pointer-events: none; transition: opacity 0.4s ease;
+    }
+    .mobile-menu.open { opacity: 1; pointer-events: all; }
+    .mobile-menu a {
+      font-family: 'Cormorant Garamond', serif; font-size: clamp(2rem, 6vw, 3rem);
+      font-weight: 300; font-style: italic; color: var(--moon); text-decoration: none;
+      letter-spacing: 0.06em; transition: color 0.3s;
+    }
+    .mobile-menu a:hover { color: var(--paper); }
+    .mobile-menu .menu-sub {
+      font-family: 'Syne', sans-serif; font-size: 0.7rem; font-style: normal;
+      letter-spacing: 0.2em; text-transform: uppercase; color: var(--silver); margin-top: 2rem;
+    }
+
+    /* ── Shared bits ── */
+    .section-label { font-size: 0.68rem; letter-spacing: 0.2em; text-transform: uppercase; color: var(--glow); margin-bottom: 1rem; }
+    .section-title {
+      font-family: 'Cormorant Garamond', serif; font-size: clamp(2.4rem, 5vw, 4rem);
+      font-weight: 300; line-height: 1.05; color: var(--paper); margin-bottom: 1.5rem;
+    }
+    .section-title em { font-style: italic; color: var(--moon); }
+
+    .btn {
+      display: inline-flex; align-items: center; gap: 0.75rem; padding: 0.9rem 2.2rem;
+      font-family: 'Syne', sans-serif; font-size: 0.78rem; letter-spacing: 0.14em;
+      text-transform: uppercase; text-decoration: none; cursor: none;
+      transition: all 0.35s ease; position: relative; overflow: hidden; border: none;
+    }
+    .btn-outline { border: 1px solid rgba(200,191,168,0.3); color: var(--paper); background: none; }
+    .btn-outline::before {
+      content: ''; position: absolute; inset: 0; background: var(--glow);
+      transform: translateX(-100%); transition: transform 0.4s ease; z-index: -1;
+    }
+    .btn-outline:hover { border-color: var(--glow); }
+    .btn-outline:hover::before { transform: translateX(0); }
+    .btn-solid { background: var(--accent); color: var(--ink); border: 1px solid transparent; }
+    .btn-solid:hover { background: var(--moon); transform: translateY(-2px); box-shadow: 0 8px 30px rgba(200,191,168,0.2); }
+    .btn-arrow { transition: transform 0.3s; }
+    .btn:hover .btn-arrow { transform: translateX(4px); }
+
+    /* ── Blog header ── */
+    .blog-head {
+      position: relative; z-index: 1; padding: 12rem 4rem 4rem;
+      max-width: 1100px;
+    }
+    .blog-head p.intro { color: var(--silver); font-size: 1rem; line-height: 1.9; max-width: 540px; }
+
+    /* ── Filter tabs ── */
+    .blog-filters {
+      position: relative; z-index: 1; padding: 0 4rem; margin-bottom: 3.5rem;
+      display: flex; gap: 0.6rem; flex-wrap: wrap;
+    }
+    .filter-tab {
+      font-family: 'Syne', sans-serif; font-size: 0.72rem; letter-spacing: 0.14em;
+      text-transform: uppercase; color: var(--silver); background: none;
+      border: 1px solid rgba(200,191,168,0.14); padding: 0.6rem 1.4rem; cursor: none;
+      transition: color 0.3s, border-color 0.3s, background 0.3s;
+    }
+    .filter-tab:hover { color: var(--paper); border-color: rgba(123,156,191,0.5); }
+    .filter-tab.active { color: var(--ink); background: var(--accent); border-color: var(--accent); }
+
+    /* ── Post list ── */
+    .post-list { position: relative; z-index: 1; padding: 0 4rem 6rem; display: grid; gap: 1px; max-width: 1100px; }
+    .post-card {
+      display: block; text-decoration: none; color: inherit; position: relative;
+      padding: 2.5rem 0; border-top: 1px solid rgba(200,191,168,0.1);
+      transition: padding-left 0.4s ease;
+    }
+    .post-list .post-card:last-child { border-bottom: 1px solid rgba(200,191,168,0.1); }
+    .post-card::before {
+      content: ''; position: absolute; left: 0; top: 0; bottom: 0; width: 2px;
+      background: var(--glow); transform: scaleY(0); transform-origin: top; transition: transform 0.4s ease;
+    }
+    .post-card:hover { padding-left: 1.5rem; }
+    .post-card:hover::before { transform: scaleY(1); }
+    .post-meta { display: flex; align-items: center; gap: 1rem; margin-bottom: 0.9rem; }
+    .post-cat {
+      font-size: 0.62rem; letter-spacing: 0.18em; text-transform: uppercase; color: var(--glow);
+      border: 1px solid rgba(123,156,191,0.3); padding: 0.25rem 0.7rem;
+    }
+    .post-cat.note { color: var(--moon); border-color: rgba(200,191,168,0.3); }
+    .post-date { font-size: 0.7rem; letter-spacing: 0.1em; text-transform: uppercase; color: var(--silver); }
+    .post-title {
+      font-family: 'Cormorant Garamond', serif; font-size: clamp(1.7rem, 3vw, 2.4rem);
+      font-weight: 300; line-height: 1.15; color: var(--paper); margin-bottom: 0.8rem; transition: color 0.3s;
+    }
+    .post-card:hover .post-title { color: var(--moon); }
+    .post-excerpt { font-size: 0.9rem; line-height: 1.8; color: var(--silver); max-width: 620px; }
+    .post-readmore {
+      display: inline-flex; align-items: center; gap: 0.5rem; margin-top: 1.2rem;
+      font-size: 0.7rem; letter-spacing: 0.14em; text-transform: uppercase; color: var(--moon);
+    }
+    .post-readmore .a { transition: transform 0.3s; }
+    .post-card:hover .post-readmore .a { transform: translateX(4px); }
+    .empty-state { padding: 3rem 0; color: var(--silver); font-size: 0.9rem; }
+
+    /* ── Subscribe band ── */
+    .sub-band {
+      position: relative; z-index: 1; margin: 0 4rem 6rem; padding: 4rem;
+      border: 1px solid rgba(200,191,168,0.1); background: rgba(26,26,46,0.4);
+      display: flex; justify-content: space-between; align-items: center; gap: 2rem; flex-wrap: wrap;
+    }
+    .sub-band h3 { font-family: 'Cormorant Garamond', serif; font-weight: 300; font-size: clamp(1.6rem, 3vw, 2.2rem); color: var(--paper); margin-bottom: 0.6rem; }
+    .sub-band h3 em { font-style: italic; color: var(--moon); }
+    .sub-band p { font-size: 0.88rem; color: var(--silver); line-height: 1.7; max-width: 420px; }
+
+    /* ── Footer ── */
+    footer {
+      position: relative; z-index: 1; padding: 2.5rem 4rem;
+      display: flex; justify-content: space-between; align-items: center;
+      border-top: 1px solid rgba(200,191,168,0.07);
+    }
+    .footer-brand { display: flex; flex-direction: column; gap: 0.3rem; }
+    .footer-logo-text { font-family: 'Cormorant Garamond', serif; font-size: 1.2rem; font-weight: 300; letter-spacing: 0.1em; color: var(--moon); }
+    .footer-logo-text span { font-style: italic; }
+    footer p { font-size: 0.7rem; letter-spacing: 0.08em; color: rgba(156,163,176,0.4); }
+    .footer-links { display: flex; gap: 2rem; list-style: none; }
+    .footer-links a { font-size: 0.7rem; letter-spacing: 0.12em; text-transform: uppercase; color: rgba(156,163,176,0.4); text-decoration: none; transition: color 0.3s; }
+    .footer-links a:hover { color: var(--silver); }
+
+    /* ── Reveal ── */
+    .reveal { opacity: 0; transform: translateY(28px); transition: opacity 0.8s ease, transform 0.8s ease; }
+    .reveal.visible { opacity: 1; transform: translateY(0); }
+
+    /* ════════ SUBSCRIBE POPUP ════════ */
+    /* Toast */
+    .sub-toast {
+      position: fixed; bottom: 2rem; right: 2rem; z-index: 9000;
+      width: 340px; max-width: calc(100vw - 2rem);
+      background: rgba(16,16,28,0.96); backdrop-filter: blur(14px);
+      border: 1px solid rgba(200,191,168,0.18); padding: 1.6rem 1.6rem 1.4rem;
+      box-shadow: 0 20px 60px rgba(0,0,0,0.5);
+      transform: translateY(140%); opacity: 0; pointer-events: none;
+      transition: transform 0.55s cubic-bezier(.2,.8,.2,1), opacity 0.4s ease;
+    }
+    .sub-toast.show { transform: translateY(0); opacity: 1; pointer-events: all; }
+    .sub-toast .toast-glyph {
+      font-family: 'Cormorant Garamond', serif; font-style: italic; font-size: 1.4rem;
+      color: var(--moon); margin-bottom: 0.5rem;
+    }
+    .sub-toast h4 { font-family: 'Cormorant Garamond', serif; font-weight: 300; font-size: 1.4rem; color: var(--paper); line-height: 1.2; margin-bottom: 0.5rem; }
+    .sub-toast p { font-size: 0.82rem; line-height: 1.65; color: var(--silver); margin-bottom: 1.2rem; }
+    .sub-toast-actions { display: flex; gap: 0.7rem; align-items: center; }
+    .toast-btn {
+      font-family: 'Syne', sans-serif; font-size: 0.7rem; letter-spacing: 0.12em; text-transform: uppercase;
+      padding: 0.65rem 1.3rem; cursor: none; border: none; transition: all 0.3s ease;
+    }
+    .toast-btn.primary { background: var(--accent); color: var(--ink); }
+    .toast-btn.primary:hover { background: var(--moon); }
+    .toast-btn.ghost { background: none; color: var(--silver); border: 1px solid transparent; }
+    .toast-btn.ghost:hover { color: var(--paper); }
+
+    /* Modal */
+    .sub-modal-overlay {
+      position: fixed; inset: 0; z-index: 9500; background: rgba(6,6,12,0.82); backdrop-filter: blur(8px);
+      display: flex; align-items: center; justify-content: center; padding: 1.5rem;
+      opacity: 0; pointer-events: none; transition: opacity 0.4s ease;
+    }
+    .sub-modal-overlay.show { opacity: 1; pointer-events: all; }
+    .sub-modal {
+      position: relative; width: 480px; max-width: 100%;
+      background: var(--ink); border: 1px solid rgba(200,191,168,0.18);
+      padding: 3rem 2.8rem 2.6rem; box-shadow: 0 30px 80px rgba(0,0,0,0.6);
+      transform: translateY(20px) scale(0.98); transition: transform 0.45s cubic-bezier(.2,.8,.2,1);
+      overflow: hidden;
+    }
+    .sub-modal-overlay.show .sub-modal { transform: translateY(0) scale(1); }
+    .sub-modal::before {
+      content: ''; position: absolute; top: -80px; right: -80px; width: 260px; height: 260px;
+      border-radius: 50%;
+      background: radial-gradient(circle at 40% 40%, rgba(200,191,168,0.08), rgba(123,156,191,0.03) 60%, transparent 80%);
+      pointer-events: none;
+    }
+    .sub-close {
+      position: absolute; top: 1.1rem; right: 1.1rem; width: 34px; height: 34px;
+      background: none; border: 1px solid rgba(200,191,168,0.2); border-radius: 50%;
+      color: var(--moon); font-size: 1rem; cursor: none; display: flex; align-items: center; justify-content: center;
+      transition: border-color 0.3s, color 0.3s, transform 0.3s;
+    }
+    .sub-close:hover { border-color: var(--glow); color: var(--glow); transform: rotate(90deg); }
+    .sub-modal .eyebrow { font-size: 0.66rem; letter-spacing: 0.22em; text-transform: uppercase; color: var(--glow); margin-bottom: 1rem; position: relative; }
+    .sub-modal h3 { font-family: 'Cormorant Garamond', serif; font-weight: 300; font-size: 2.2rem; line-height: 1.1; color: var(--paper); margin-bottom: 1rem; position: relative; }
+    .sub-modal h3 em { font-style: italic; color: var(--moon); }
+    .sub-modal .blurb { font-size: 0.9rem; line-height: 1.8; color: var(--silver); margin-bottom: 1.8rem; position: relative; }
+    .sub-embed-frame {
+      position: relative; border: 1px solid rgba(200,191,168,0.14); background: rgba(245,242,236,0.02);
+      padding: 0.4rem; min-height: 90px;
+    }
+    .sub-embed-frame iframe { width: 100% !important; border: none; background: transparent; display: block; }
+    .sub-fallback { margin-top: 1.1rem; font-size: 0.78rem; color: var(--silver); position: relative; }
+    .sub-fallback a { color: var(--moon); text-decoration: none; border-bottom: 1px solid rgba(200,191,168,0.3); }
+    .sub-fallback a:hover { color: var(--paper); }
+
+    /* ── Responsive ── */
+    @media (max-width: 900px) {
+      nav { padding: 1.5rem 2rem; }
+      nav.scrolled { padding: 1rem 2rem; }
+      .nav-links { display: none; }
+      .hamburger { display: flex; }
+      .blog-head { padding: 9rem 2rem 3rem; }
+      .blog-filters { padding: 0 2rem; }
+      .post-list { padding: 0 2rem 4rem; }
+      .sub-band { margin: 0 2rem 4rem; padding: 2.5rem; }
+      footer { flex-direction: column; gap: 1.5rem; text-align: center; padding: 2rem; }
+      .footer-links { justify-content: center; flex-wrap: wrap; }
+      .sub-toast { right: 1rem; left: 1rem; bottom: 1rem; width: auto; }
+      .sub-modal { padding: 2.4rem 1.6rem 2rem; }
+    }
+  </style>
+</head>
+<body>
+
+  <div id="cursor-dot"></div>
+  <div id="cursor-ring"></div>
+  <canvas id="star-canvas"></canvas>
+
+  <!-- ── NAVIGATION ── -->
+  <nav id="main-nav">
+    <a href="index.html" class="nav-logo">Moon<span>shade</span> Digital</a>
+    <ul class="nav-links">
+      <li><a href="index.html#work">Work</a></li>
+      <li><a href="index.html#services">Services</a></li>
+      <li><a href="index.html#about">About</a></li>
+      <li><a href="blog.html" class="active">Journal</a></li>
+      <li><a href="index.html#contact">Contact</a></li>
+    </ul>
+    <button class="hamburger" id="hamburger" aria-label="Toggle menu" aria-expanded="false">
+      <span></span><span></span><span></span>
+    </button>
+  </nav>
+
+  <!-- ── MOBILE MENU ── -->
+  <div class="mobile-menu" id="mobile-menu" role="dialog" aria-modal="true" aria-label="Navigation menu">
+    <a href="index.html#work" class="menu-link">Work</a>
+    <a href="index.html#services" class="menu-link">Services</a>
+    <a href="index.html#about" class="menu-link">About</a>
+    <a href="blog.html" class="menu-link">Journal</a>
+    <a href="index.html#contact" class="menu-link">Contact</a>
+    <span class="menu-sub">Moonshade Digital — Est. 2018</span>
+  </div>
+
+  <!-- ── HEADER ── -->
+  <header class="blog-head">
+    <p class="section-label reveal">The Journal</p>
+    <h1 class="section-title reveal">Notes from the <em>shadow.</em></h1>
+    <p class="intro reveal">Articles and shorter notes on craft, strategy, and the discipline of building brands that last. We publish when there's something worth your time — and not before.</p>
+  </header>
+
+  <!-- ── FILTERS ── -->
+  <div class="blog-filters reveal">
+    <button class="filter-tab active" data-filter="all">All</button>
+    <button class="filter-tab" data-filter="Article">Articles</button>
+    <button class="filter-tab" data-filter="Note">Notes</button>
+  </div>
+
+  <!-- ── POST LIST ── -->
+  <main class="post-list" id="post-list">
+    <div class="empty-state">Loading entries…</div>
+  </main>
+
+  <!-- ── SUBSCRIBE BAND ── -->
+  <section class="sub-band reveal">
+    <div>
+      <h3>Never miss a <em>new piece.</em></h3>
+      <p>Subscribe and we'll send each new article and note straight to your inbox the moment it goes live.</p>
+    </div>
+    <button class="btn btn-solid" id="open-sub-band">Subscribe <span class="btn-arrow">→</span></button>
+  </section>
+
+  <!-- ── FOOTER ── -->
+  <footer>
+    <div class="footer-brand">
+      <div class="footer-logo-text">Moon<span>shade</span> Digital</div>
+      <p>© 2026 Moonshade Digital. All rights reserved.</p>
+    </div>
+    <ul class="footer-links">
+      <li><a href="https://www.patreon.com/cw/MoonshadeDigital" target="_blank" rel="noopener">Patreon</a></li>
+      <li><a href="https://moonshadedigital.substack.com" target="_blank" rel="noopener">Substack</a></li>
+      <li><a href="https://www.linkedin.com/company/moonshade-media" target="_blank" rel="noopener">LinkedIn</a></li>
+      <li><a href="https://www.behance.net/jfairiii" target="_blank" rel="noopener">Behance</a></li>
+      <li><a href="https://github.com/Moonshade-Digital" target="_blank" rel="noopener">GitHub</a></li>
+      <li><a href="https://www.instagram.com/moonshadedigital" target="_blank" rel="noopener">Instagram</a></li>
+    </ul>
+  </footer>
+
+  <!-- ════════ SUBSCRIBE POPUP ════════ -->
+  <div class="sub-toast" id="sub-toast" role="dialog" aria-label="Subscribe notification">
+    <div class="toast-glyph">☾</div>
+    <h4>New writing, in your inbox.</h4>
+    <p>Want a heads-up whenever we publish a new article or note? Join the Moonshade list.</p>
+    <div class="sub-toast-actions">
+      <button class="toast-btn primary" id="toast-yes">Subscribe</button>
+      <button class="toast-btn ghost" id="toast-no">Maybe later</button>
+    </div>
+  </div>
+
+  <div class="sub-modal-overlay" id="sub-modal-overlay" role="dialog" aria-modal="true" aria-label="Subscribe">
+    <div class="sub-modal">
+      <button class="sub-close" id="sub-close" aria-label="Close">✕</button>
+      <p class="eyebrow">Moonshade Digital — The List</p>
+      <h3>Get notified when we <em>publish.</em></h3>
+      <p class="blurb">Drop your email below and you'll be the first to know each time a new piece goes up — no spam, no noise, just the work.</p>
+      <div class="sub-embed-frame">
+        <iframe src="https://moonshadedigital.substack.com/embed" height="90" scrolling="no" title="Subscribe to Moonshade Digital"></iframe>
+      </div>
+      <p class="sub-fallback">Prefer the full page? <a href="https://moonshadedigital.substack.com/subscribe" target="_blank" rel="noopener">Subscribe on Substack →</a></p>
+    </div>
+  </div>
+
+  <script>
+    /* ── Custom Cursor ── */
+    const dot = document.getElementById('cursor-dot');
+    const ring = document.getElementById('cursor-ring');
+    let mx = -200, my = -200, rx = -200, ry = -200;
+    document.addEventListener('mousemove', e => { mx = e.clientX; my = e.clientY; dot.style.left = mx+'px'; dot.style.top = my+'px'; });
+    (function animRing(){ rx += (mx-rx)*0.12; ry += (my-ry)*0.12; ring.style.left = rx+'px'; ring.style.top = ry+'px'; requestAnimationFrame(animRing); })();
+    function bindCursor(){
+      document.querySelectorAll('a, button, input, textarea, select, .post-card, iframe').forEach(el => {
+        if (el.dataset.cur) return; el.dataset.cur = '1';
+        el.addEventListener('mouseenter', () => document.body.classList.add('cursor-hover'));
+        el.addEventListener('mouseleave', () => document.body.classList.remove('cursor-hover'));
+      });
+    }
+    bindCursor();
+
+    /* ── Star Field ── */
+    const canvas = document.getElementById('star-canvas');
+    const ctx = canvas.getContext('2d');
+    let stars = [];
+    function resizeCanvas(){ canvas.width = window.innerWidth; canvas.height = window.innerHeight; }
+    function initStars(){
+      stars = [];
+      const count = Math.floor((canvas.width * canvas.height) / 8000);
+      for (let i=0;i<count;i++) stars.push({ x:Math.random()*canvas.width, y:Math.random()*canvas.height, r:Math.random()*1.2+0.2, a:Math.random(), speed:Math.random()*0.004+0.001, phase:Math.random()*Math.PI*2 });
+    }
+    let frame = 0;
+    function drawStars(){
+      ctx.clearRect(0,0,canvas.width,canvas.height); frame += 0.008;
+      stars.forEach(s => { const alpha = s.a*(0.5+0.5*Math.sin(frame*s.speed*60+s.phase)); ctx.beginPath(); ctx.arc(s.x,s.y,s.r,0,Math.PI*2); ctx.fillStyle=`rgba(200,191,168,${alpha})`; ctx.fill(); });
+      requestAnimationFrame(drawStars);
+    }
+    resizeCanvas(); initStars(); drawStars();
+    window.addEventListener('resize', () => { resizeCanvas(); initStars(); });
+
+    /* ── Hamburger ── */
+    const hamburger = document.getElementById('hamburger');
+    const mobileMenu = document.getElementById('mobile-menu');
+    function toggleMenu(open){ hamburger.classList.toggle('open', open); mobileMenu.classList.toggle('open', open); hamburger.setAttribute('aria-expanded', open); document.body.style.overflow = open ? 'hidden' : ''; }
+    hamburger.addEventListener('click', () => toggleMenu(!hamburger.classList.contains('open')));
+    document.querySelectorAll('.menu-link').forEach(l => l.addEventListener('click', () => toggleMenu(false)));
+    document.addEventListener('keydown', e => { if (e.key === 'Escape') toggleMenu(false); });
+
+    /* ── Scroll Nav ── */
+    const nav = document.getElementById('main-nav');
+    window.addEventListener('scroll', () => nav.classList.toggle('scrolled', window.scrollY > 60));
+
+    /* ── Reveal ── */
+    const io = new IntersectionObserver(entries => {
+      entries.forEach((entry, i) => { if (entry.isIntersecting){ setTimeout(() => entry.target.classList.add('visible'), (i%4)*90); io.unobserve(entry.target); } });
+    }, { threshold: 0.08 });
+    function observeReveals(){ document.querySelectorAll('.reveal:not(.visible)').forEach(el => io.observe(el)); }
+    observeReveals();
+
+    /* ── Magnetic buttons ── */
+    function bindMagnetic(){
+      document.querySelectorAll('.btn').forEach(btn => {
+        if (btn.dataset.mag) return; btn.dataset.mag = '1';
+        btn.addEventListener('mousemove', e => { const r=btn.getBoundingClientRect(); const dx=(e.clientX-(r.left+r.width/2))*0.28; const dy=(e.clientY-(r.top+r.height/2))*0.28; btn.style.transform=`translate(${dx}px,${dy}px)`; });
+        btn.addEventListener('mouseleave', () => { btn.style.transform=''; });
+      });
+    }
+    bindMagnetic();
+
+    /* ── Load + render posts ── */
+    const listEl = document.getElementById('post-list');
+    let ALL_POSTS = [];
+    function fmtDate(iso){
+      try { return new Date(iso + 'T00:00:00').toLocaleDateString('en-US', { year:'numeric', month:'long', day:'numeric' }); }
+      catch(e){ return iso; }
+    }
+    function renderPosts(filter){
+      const posts = filter === 'all' ? ALL_POSTS : ALL_POSTS.filter(p => p.category === filter);
+      if (!posts.length){ listEl.innerHTML = '<div class="empty-state">No entries here yet — check back soon.</div>'; return; }
+      listEl.innerHTML = posts.map(p => `
+        <a class="post-card reveal" href="post.html?post=${encodeURIComponent(p.slug)}">
+          <div class="post-meta">
+            <span class="post-cat ${p.category === 'Note' ? 'note' : ''}">${p.category}</span>
+            <span class="post-date">${fmtDate(p.date)}</span>
+          </div>
+          <h2 class="post-title">${p.title}</h2>
+          <p class="post-excerpt">${p.excerpt || ''}</p>
+          <span class="post-readmore">Read ${p.category === 'Note' ? 'note' : 'article'} <span class="a">→</span></span>
+        </a>`).join('');
+      bindCursor(); observeReveals();
+    }
+    fetch('posts.json', { cache: 'no-store' })
+      .then(r => { if (!r.ok) throw new Error('manifest'); return r.json(); })
+      .then(data => {
+        ALL_POSTS = data.slice().sort((a,b) => (a.date < b.date ? 1 : -1));
+        renderPosts('all');
+      })
+      .catch(() => { listEl.innerHTML = '<div class="empty-state">Entries couldn\'t be loaded right now. Please try again shortly.</div>'; });
+
+    document.querySelectorAll('.filter-tab').forEach(tab => {
+      tab.addEventListener('click', () => {
+        document.querySelectorAll('.filter-tab').forEach(t => t.classList.remove('active'));
+        tab.classList.add('active');
+        renderPosts(tab.dataset.filter);
+      });
+    });
+
+    /* ════════ SUBSCRIBE POPUP LOGIC ════════ */
+    const toast   = document.getElementById('sub-toast');
+    const overlay = document.getElementById('sub-modal-overlay');
+    const KEY = 'ms_sub_dismissed_at';
+    const COOLDOWN_DAYS = 14;
+
+    function recentlyDismissed(){
+      try { const t = localStorage.getItem(KEY); if (!t) return false; return (Date.now() - Number(t)) < COOLDOWN_DAYS*86400000; }
+      catch(e){ return false; }
+    }
+    function remember(){ try { localStorage.setItem(KEY, String(Date.now())); } catch(e){} }
+    function showToast(){ toast.classList.add('show'); }
+    function hideToast(){ toast.classList.remove('show'); }
+    function openModal(){ hideToast(); overlay.classList.add('show'); document.body.style.overflow = 'hidden'; }
+    function closeModal(){ overlay.classList.remove('show'); document.body.style.overflow = ''; }
+
+    if (!recentlyDismissed()) { setTimeout(showToast, 6000); }
+
+    document.getElementById('toast-yes').addEventListener('click', () => { remember(); openModal(); });
+    document.getElementById('toast-no').addEventListener('click', () => { remember(); hideToast(); });
+    document.getElementById('sub-close').addEventListener('click', closeModal);
+    document.getElementById('open-sub-band').addEventListener('click', openModal);
+    overlay.addEventListener('click', e => { if (e.target === overlay) closeModal(); });
+    document.addEventListener('keydown', e => { if (e.key === 'Escape' && overlay.classList.contains('show')) closeModal(); });
+  </script>
+</body>
+</html>
